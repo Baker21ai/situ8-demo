@@ -27,43 +27,6 @@ export function DemoModal({ isOpen, onClose }: DemoModalProps) {
     }
   }, [isOpen]);
 
-  // Handle scroll fade indicators
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const scrollContainer = document.getElementById('calendly-scroll-container');
-    const fadeTop = document.getElementById('scroll-fade-top');
-    const fadeBottom = document.getElementById('scroll-fade-bottom');
-
-    if (!scrollContainer || !fadeTop || !fadeBottom) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-
-      // Show top fade when scrolled down
-      if (scrollTop > 20) {
-        fadeTop.style.opacity = '1';
-      } else {
-        fadeTop.style.opacity = '0';
-      }
-
-      // Hide bottom fade when at bottom
-      if (scrollTop + clientHeight >= scrollHeight - 20) {
-        fadeBottom.style.opacity = '0';
-      } else {
-        fadeBottom.style.opacity = '1';
-      }
-    };
-
-    // Initial check
-    setTimeout(handleScroll, 500); // Wait for Calendly to load
-    scrollContainer.addEventListener('scroll', handleScroll);
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, [isOpen]);
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[95vh] w-[95vw] sm:w-full p-0 overflow-hidden bg-white/95 backdrop-blur-xl border-0 shadow-2xl flex flex-col">
@@ -82,68 +45,39 @@ export function DemoModal({ isOpen, onClose }: DemoModalProps) {
           </p>
         </DialogHeader>
 
-        {/* Calendly Widget Section - Scrollable Container */}
+        {/* Calendly Widget Section - Flattened structure with explicit height */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex-1 px-4 sm:px-8 pb-4 sm:pb-8 overflow-hidden flex flex-col min-h-0"
-        >
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex-1 flex flex-col overflow-hidden relative">
-            {/* Scroll fade indicators */}
-            <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent pointer-events-none z-10 opacity-0 transition-opacity" id="scroll-fade-top" />
+          className="calendly-inline-widget"
+          data-url="https://calendly.com/yamen-khabbaz-situ8?hide_gdpr_banner=1&background_color=ffffff&text_color=111827&primary_color=7c3aed"
+          style={{
+            width: '100%',
+            height: 'calc(95vh - 180px)',
+            minHeight: '500px',
+            backgroundColor: '#ffffff',
+            position: 'relative'
+          }}
+        />
 
-            {/* Calendly Inline Widget - Scrollable */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden" id="calendly-scroll-container">
-              <div
-                className="calendly-inline-widget"
-                data-url="https://calendly.com/yamen-khabbaz-situ8?hide_gdpr_banner=1&background_color=ffffff&text_color=111827&primary_color=7c3aed"
-                style={{
-                  minWidth: '320px',
-                  width: '100%',
-                  minHeight: '650px',
-                  height: '100%',
-                  backgroundColor: '#ffffff'
-                }}
-              />
+        {/* Additional Info - Compact footer */}
+        <div className="border-t border-gray-100 bg-gray-50/50 px-4 sm:px-6 py-3 flex-shrink-0">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-purple-600 rounded-full"></div>
+              <span>Platform walkthrough</span>
             </div>
-
-            {/* Bottom scroll fade indicator */}
-            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none z-10" id="scroll-fade-bottom" />
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-purple-600 rounded-full"></div>
+              <span>Live Q&A</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-purple-600 rounded-full"></div>
+              <span>ROI analysis</span>
+            </div>
           </div>
-
-          {/* Additional Info - Moved outside scrollable area, collapsed on mobile */}
-          <details className="mt-4 sm:mt-6 bg-gray-50 rounded-xl group" open>
-            <summary className="p-4 sm:p-6 cursor-pointer list-none">
-              <h4 className="font-medium text-gray-900 text-center inline-flex items-center justify-center w-full gap-2">
-                What to expect in your 30-minute demo
-                <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-              </h4>
-            </summary>
-            <div className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-              <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 text-center">
-                <div className="space-y-2">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
-                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                  </div>
-                  <p className="text-sm text-gray-600">Personalized platform walkthrough</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
-                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                  </div>
-                  <p className="text-sm text-gray-600">Live Q&A with security experts</p>
-                </div>
-                <div className="space-y-2">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
-                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                  </div>
-                  <p className="text-sm text-gray-600">Custom ROI analysis</p>
-                </div>
-              </div>
-            </div>
-          </details>
-        </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );
